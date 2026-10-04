@@ -134,12 +134,14 @@ The script depends on the following commands:
 - `wtype` → for simulating keystrokes (needed for `--keystroke-mode`)  
 - `wl-clipboard` → provides `wl-copy` / `wl-paste` for clipboard support  
 - GNU `getopt` → validates long options (usually provided by util-linux)
+- `cat` → prints the help heredoc
 - `pgrep` and the standard `mkdir`, `chmod`, `mktemp` utilities; `rm` with `--rm-tmp`
 
 Only the selected terminal is required. `wofi` is required only with
 `--ask-ext`, `wl-paste` only with `--copy-selected`, and `wl-copy` only in
 clipboard mode. `wtype` is required in both output modes. Standalone
-`--help` does not require any external commands.
+`--help` requires only the standard `cat` utility, not GNU `getopt`, editor,
+terminal, or Wayland tools, as approved during PR review.
 
 Install on Arch-based systems:
 

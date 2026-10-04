@@ -14,7 +14,7 @@
 - Review the entire script against the Bash skill, not only the changed function.
 - Use four-space indentation, kebab-case functions, snake_case locals, ALL_CAPS globals, quoted arguments, command arrays, explicit critical failure handling, and safe lifecycle cleanup.
 - Do not use `eval`, `set -e`, `set -u`, or blanket `set -euo pipefail`.
-- Validate arguments before runtime side effects; help must work without runtime utilities.
+- Validate arguments before runtime side effects; help must work without editor, terminal, or Wayland utilities. PR review explicitly approved `cat <<HERE` for help, so the standard `cat` utility is required.
 - Preserve text and argument boundaries faithfully.
 
 ## Static verification only

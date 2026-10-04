@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+NAME=${0##*/}
 ASK_EXT=false
 REMOVE_TMP=false
 KEYSTROKE_MODE=false
@@ -34,30 +35,32 @@ emit() {
 }
 
 show-help() {
-    printf 'Usage: %s [OPTIONS]\n\n' "${0##*/}"
-    printf '%s\n' \
-        'Options (long form only):' \
-        '  --help                 Show usage and exit successfully.' \
-        '  --ask-ext              Prompt for a temporary buffer file extension.' \
-        '  --rm-tmp               Delete the temporary file after successful use.' \
-        '                         Keep it on failure or interruption to protect edits.' \
-        '  --copy-selected        Start editing the Wayland primary selection.' \
-        '  --keystroke-mode       Type text with wtype instead of clipboard paste.' \
-        '                         Line breaks may submit input in some applications.' \
-        '  --font-size SIZE       Positive terminal font size (default: 25).' \
-        '  --term EXECUTABLE      Terminal executable (default: alacritty).' \
-        '  --term-opts ARG        Override defaults; repeat once per terminal argument.' \
-        '                         Use --term-opts=ARG for arguments starting with --.' \
-        '                         Quoted strings remain one argument, not shell code.' \
-        '  --                     End options; no positional arguments are accepted.' \
-        '' \
-        'Values also accept --option=VALUE. Default terminal options are:' \
-        '  -o font.size=SIZE --class nvim-wl-anywhere -e' \
-        'Custom terminal options must include the terminal command-execution flag.' \
-        'The existing editor invocation is Neovim; no editor abstraction is added.' \
-        '' \
-        'Example: --term foot --term-opts=--app-id --term-opts=nvim-wl-anywhere --term-opts=-e' \
-        'Exit status: 0 success/help, 2 argument error, 1 operational failure.'
+    cat <<HERE || emit f 'Unable to print help; cat is required.' 1
+Usage: $NAME [OPTIONS]
+
+Options (long form only):
+  --help                 Show usage and exit successfully.
+  --ask-ext              Prompt for a temporary buffer file extension.
+  --rm-tmp               Delete the temporary file after successful use.
+                         Keep it on failure or interruption to protect edits.
+  --copy-selected        Start editing the Wayland primary selection.
+  --keystroke-mode       Type text with wtype instead of clipboard paste.
+                         Line breaks may submit input in some applications.
+  --font-size SIZE       Positive terminal font size (default: 25).
+  --term EXECUTABLE      Terminal executable (default: alacritty).
+  --term-opts ARG        Override defaults; repeat once per terminal argument.
+                         Use --term-opts=ARG for arguments starting with --.
+                         Quoted strings remain one argument, not shell code.
+  --                     End options; no positional arguments are accepted.
+
+Values also accept --option=VALUE. Default terminal options are:
+  -o font.size=SIZE --class nvim-wl-anywhere -e
+Custom terminal options must include the terminal command-execution flag.
+The existing editor invocation is Neovim; no editor abstraction is added.
+
+Example: --term foot --term-opts=--app-id --term-opts=nvim-wl-anywhere --term-opts=-e
+Exit status: 0 success/help, 2 argument error, 1 operational failure.
+HERE
 }
 
 parse-args() {
@@ -74,7 +77,7 @@ parse-args() {
     ((getopt_status == 4)) || emit f 'GNU getopt with long-option support is required.' 1
 
     # Validate with getopt, but consume original argv instead of evaluating its output.
-    getopt --name "${0##*/}" --options '' \
+    getopt --name "$NAME" --options '' \
         --longoptions 'ask-ext,rm-tmp,keystroke-mode,copy-selected,font-size:,term:,term-opts:,help' \
         -- "$@" >/dev/null || exit 2
 
