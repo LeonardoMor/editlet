@@ -16,6 +16,7 @@
 - Do not use `set -e`, `set -u`, or blanket `set -euo pipefail`.
 - Validate arguments before runtime side effects; help must work without editor, terminal, or Wayland utilities. PR review explicitly approved `cat <<HERE` for help, so the standard `cat` utility is required.
 - Preserve text and argument boundaries faithfully.
+- Use GNU getopt's Bash-quoted output with `eval set -- "$parsed"`; this is the approved exception to the Bash skill's no-eval rule. Never evaluate raw user arguments or add a custom decoder.
 - Rely on installation/package dependencies rather than runtime dependency probes; preserve operational failure handling.
 
 ## Static verification only

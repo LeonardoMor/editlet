@@ -76,10 +76,11 @@ Options are long-form only:
 | `--term-opts ARG` | Repeat once per terminal argument to replace all default terminal options. |
 | `--` | End options; positional arguments are not accepted. |
 
-Value options also accept `--option=VALUE`. Supply terminal long flags with
-`--term-opts=--flag`. Each value is one exact argument: quoting preserves spaces
-and glob characters, and no shell splitting or evaluation occurs. Replace old
-space-separated `--term-opts` strings/lists with repeated occurrences, for example:
+Value options also accept `--option=VALUE`. Terminal long flags may be supplied
+as `--term-opts=--flag` or `--term-opts --flag`. Each value is one exact argument:
+getopt's Bash quoting preserves spaces and glob characters as literal data.
+Replace old space-separated `--term-opts` strings/lists with repeated occurrences,
+for example:
 
 ```bash
 ./nvim-wl-anywhere.sh --font-size 18
@@ -94,9 +95,11 @@ Default terminal arguments are `-o font.size=SIZE --class nvim-wl-anywhere -e`.
 Custom options must include the chosen terminal's command-execution flag.
 Repeated `--term-opts` append arguments in order; the first occurrence removes
 the defaults. An explicitly empty value represents an empty terminal argument.
-Scalar options use the last supplied value. GNU `getopt` validates syntax;
-the script consumes original arguments without `eval` and rejects abbreviated
-options, short aliases, unknown options, missing values, and positional arguments.
+Scalar options use the last supplied value. GNU `getopt` validates and normalizes
+options; the script loads its Bash-quoted output with `eval set -- "$parsed"`.
+Unambiguous long-option abbreviations and dash-leading required values follow
+GNU getopt semantics. Short aliases, unknown options, missing values, and
+positional arguments are rejected.
 
 Exit statuses: `0` for success/help, `2` for argument errors, `1` for operational
 failures (signals use conventional `128 + signal` statuses). Diagnostics go to
