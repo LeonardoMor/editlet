@@ -49,7 +49,7 @@ Options (long form only):
   --font-size SIZE       Positive terminal font size (default: 25).
   --term EXECUTABLE      Terminal executable (default: alacritty).
   --term-opts ARG        Override defaults; repeat once per terminal argument.
-                         Use --term-opts=ARG for arguments starting with --.
+                         Values starting with -- are accepted.
                          Quoted strings remain one argument, not shell code.
   --                     End options; no positional arguments are accepted.
 
@@ -64,17 +64,21 @@ HERE
 }
 
 parse-args() {
-    local option value
+    local option value parsed
 
     if (($# == 1)) && [[ $1 == --help ]]; then
         SHOW_HELP=true
         return 0
     fi
 
-    # Validate with getopt, but consume original argv instead of evaluating its output.
-    getopt --name "$NAME" --options '' \
-        --longoptions 'ask-ext,rm-tmp,keystroke-mode,copy-selected,font-size:,term:,term-opts:,help' \
-        -- "$@" >/dev/null || exit 2
+    parsed=$(
+        unset GETOPT_COMPATIBLE
+        getopt --shell bash --name "$NAME" --options '' \
+            --longoptions 'ask-ext,rm-tmp,keystroke-mode,copy-selected,font-size:,term:,term-opts:,help' \
+            -- "$@"
+    ) || exit 2
+    # Evaluate only getopt's Bash-quoted output, never raw arguments.
+    eval set -- "$parsed" || emit f 'Unable to load parsed options.' 1
 
     while (($# > 0)); do
         case $1 in
@@ -83,15 +87,10 @@ parse-args() {
             --keystroke-mode) KEYSTROKE_MODE=true ;;
             --copy-selected) COPY_SELECTED=true ;;
             --help) SHOW_HELP=true ;;
-            --font-size | --font-size=* | --term | --term=* | --term-opts | --term-opts=*)
-                option=${1%%=*}
-                if [[ $1 == *=* ]]; then
-                    value=${1#*=}
-                else
-                    (($# >= 2)) && [[ $2 != --* ]] || emit e "$option requires a value (use $option=VALUE for a value starting with --)." 2
-                    value=$2
-                    shift
-                fi
+            --font-size | --term | --term-opts)
+                option=$1
+                value=$2
+                shift
                 case $option in
                     --font-size)
                         [[ $value =~ ^[0-9]+(\.[0-9]+)?$ && $value =~ [1-9] ]] || emit e '--font-size requires a positive number.' 2
