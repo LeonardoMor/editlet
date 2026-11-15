@@ -35,7 +35,7 @@ emit() {
 }
 
 show-help() {
-    cat <<HERE || emit f 'Unable to print help; cat is required.' 1
+    cat <<HERE || emit f 'Unable to print help.' 1
 Usage: $NAME [OPTIONS]
 
 Options (long form only):
@@ -64,17 +64,12 @@ HERE
 }
 
 parse-args() {
-    local option value getopt_status
+    local option value
 
     if (($# == 1)) && [[ $1 == --help ]]; then
         SHOW_HELP=true
         return 0
     fi
-
-    command -v getopt >/dev/null 2>&1 || emit f 'GNU getopt is required to parse options.' 1
-    getopt --test >/dev/null 2>&1
-    getopt_status=$?
-    ((getopt_status == 4)) || emit f 'GNU getopt with long-option support is required.' 1
 
     # Validate with getopt, but consume original argv instead of evaluating its output.
     getopt --name "$NAME" --options '' \
@@ -126,20 +121,6 @@ parse-args() {
     if ! $TERM_OPTS_SET; then
         TERM_OPTS=(-o "font.size=$FONT_SIZE" --class "$TERM_CLASS" -e)
     fi
-}
-
-check-deps() {
-    local cmd
-    local -a deps=(nvim "$TERMINAL" wtype pgrep mkdir chmod mktemp)
-
-    $ASK_EXT && deps+=(wofi)
-    $COPY_SELECTED && deps+=(wl-paste)
-    $KEYSTROKE_MODE || deps+=(wl-copy)
-    $REMOVE_TMP && deps+=(rm)
-
-    for cmd in "${deps[@]}"; do
-        command -v "$cmd" >/dev/null 2>&1 || emit f "'$cmd' is required but not installed." 1
-    done
 }
 
 kill-existing-instance() {
@@ -195,7 +176,6 @@ main() {
         return 0
     fi
 
-    check-deps
     trap 'cleanup || exit $?' EXIT
     trap 'exit 130' INT
     trap 'exit 143' TERM

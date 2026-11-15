@@ -16,23 +16,22 @@
 - Do not use `set -e`, `set -u`, or blanket `set -euo pipefail`.
 - Validate arguments before runtime side effects; help must work without editor, terminal, or Wayland utilities. PR review explicitly approved `cat <<HERE` for help, so the standard `cat` utility is required.
 - Preserve text and argument boundaries faithfully.
+- Rely on installation/package dependencies rather than runtime dependency probes; preserve operational failure handling.
 
 ## Static verification only
 - Do not run or add behavioral tests of any kind: automated tests, smoke tests, temporary test harnesses, mocks, or ad hoc CLI test cases. Do not add a test framework or test infrastructure.
 - Do not invoke Superpowers TDD for this task; this project-specific policy overrides skill recommendations to test behavior.
-- Only static checks are authorized: `bash -n`, ShellCheck when available, `git diff --check`, and review of the code and diff against the Bash checklist.
+- Only static checks are authorized: ShellCheck, `git diff --check`, and review of the code and diff against the Bash checklist.
 - Do not execute the script or its parser for verification, even with help/error arguments or intercepted operational commands.
 - Remove only test artifacts introduced by the current task; preserve pre-existing files.
 - Report unavailable tools and unverified behavior honestly.
 - Verified static commands:
-  - `bash -n nvim-wl-anywhere.sh`
   - `shellcheck nvim-wl-anywhere.sh`
   - `git diff --check`
 
 ## Branch and PR review
 - Inspect the working tree and remotes before changing files; preserve unrelated work.
 - Identify the user's fork and its default branch rather than assuming a remote or branch name.
-- Create a dedicated task branch from the fork's default branch; do not implement directly on the default branch.
 - If the requested branch already exists, inspect it and ask before reusing or replacing it.
 - Keep commits scoped to the authorized correction, related Bash refactoring, documentation, and project instructions.
 - After verification and when authorized, commit and push to the user's fork, then submit a PR against that fork's default branch, not upstream.

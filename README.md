@@ -106,7 +106,7 @@ invalid arguments reports an error rather than ignoring those arguments.
 ### Intentional corrections
 
 - Help now exits instead of looping; process termination occurs only after
-  parsing, validation, and dependency checks. Instance matching is limited to
+  argument parsing and validation. Instance matching is limited to
   the first command token, not terminal names appearing in arbitrary arguments,
   and excludes the current script PID.
 - Font-size overrides now reach default terminal arguments; custom argument
@@ -120,11 +120,14 @@ invalid arguments reports an error rather than ignoring those arguments.
   `700`. `--rm-tmp` retains the buffer on failure to protect edits.
 
 Only static verification is authorized under the current project policy:
-Bash syntax checks, ShellCheck when available, `git diff --check`, and code/diff
+ShellCheck, `git diff --check`, and code/diff
 review. Do not run behavioral tests, including smoke checks, temporary harnesses,
 mocks, or ad hoc CLI cases. See `AGENTS.md`.
 
 ## Dependencies
+
+Dependencies are assumed to be installed; the script does not probe for them.
+The eventual AUR PKGBUILD will declare the required packages.
 
 The script depends on the following commands:
 
