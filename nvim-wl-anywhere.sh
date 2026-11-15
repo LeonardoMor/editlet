@@ -35,7 +35,7 @@ emit() {
 }
 
 show-help() {
-    cat <<HERE || emit f 'Unable to print help.' 1
+    cat <<HERE
 Usage: $NAME [OPTIONS]
 
 Options (long form only):
@@ -83,7 +83,7 @@ parse-args() {
             --keystroke-mode) KEYSTROKE_MODE=true ;;
             --copy-selected) COPY_SELECTED=true ;;
             --help) SHOW_HELP=true ;;
-            --font-size|--font-size=*|--term|--term=*|--term-opts|--term-opts=*)
+            --font-size | --font-size=* | --term | --term=* | --term-opts | --term-opts=*)
                 option=${1%%=*}
                 if [[ $1 == *=* ]]; then
                     value=${1#*=}
@@ -138,7 +138,7 @@ kill-existing-instance() {
             kill -KILL -- "$pid" || emit f "Unable to terminate existing instance $pid." 1
             found=true
         fi
-    done <<< "$processes"
+    done <<<"$processes"
 
     $found && emit i 'An existing instance was found and terminated.' 1
     return 0
@@ -190,7 +190,7 @@ main() {
 
     create-tmpfile
     if $COPY_SELECTED; then
-        wl-paste --primary --no-newline > "$TMPFILE" || emit f 'Unable to read the primary selection.' 1
+        wl-paste --primary --no-newline >"$TMPFILE" || emit f 'Unable to read the primary selection.' 1
     fi
 
     editor_cmd=("$TERMINAL" "${TERM_OPTS[@]}" nvim +startinsert '+autocmd BufWritePost <buffer> quit' "$TMPFILE")
@@ -198,9 +198,9 @@ main() {
 
     [[ -s $TMPFILE ]] || emit e 'The edited buffer is empty.' 1
     if $KEYSTROKE_MODE; then
-        wtype - < "$TMPFILE" || emit f 'Unable to type edited text.' 1
+        wtype - <"$TMPFILE" || emit f 'Unable to type edited text.' 1
     else
-        wl-copy < "$TMPFILE" || emit f 'Unable to copy edited text.' 1
+        wl-copy <"$TMPFILE" || emit f 'Unable to copy edited text.' 1
         wtype -M Ctrl -k v -m Ctrl || emit f 'Unable to inject the paste shortcut.' 1
     fi
     CLEANUP_TMP=true
