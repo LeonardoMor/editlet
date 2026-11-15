@@ -13,7 +13,7 @@
 - Respect LeanCTX allowed roots; never bypass a denied reference path.
 - Review the entire script against the Bash skill, not only the changed function.
 - Use four-space indentation, kebab-case functions, snake_case locals, ALL_CAPS globals, quoted arguments, command arrays, explicit critical failure handling, and safe lifecycle cleanup.
-- Do not use `eval`, `set -e`, `set -u`, or blanket `set -euo pipefail`.
+- Do not use `set -e`, `set -u`, or blanket `set -euo pipefail`.
 - Validate arguments before runtime side effects; help must work without editor, terminal, or Wayland utilities. PR review explicitly approved `cat <<HERE` for help, so the standard `cat` utility is required.
 - Preserve text and argument boundaries faithfully.
 
@@ -34,7 +34,6 @@
 - Identify the user's fork and its default branch rather than assuming a remote or branch name.
 - Create a dedicated task branch from the fork's default branch; do not implement directly on the default branch.
 - If the requested branch already exists, inspect it and ask before reusing or replacing it.
-- For the initial parsing task, use `fix/option-parsing`.
 - Keep commits scoped to the authorized correction, related Bash refactoring, documentation, and project instructions.
 - After verification and when authorized, commit and push to the user's fork, then submit a PR against that fork's default branch, not upstream.
 - Include actual verification results and intentional behavior changes in the PR, and state that behavioral testing was intentionally omitted at the user's request. If checks were performed before this policy was clarified, disclose those checks rather than claiming none occurred.
